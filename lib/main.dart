@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:groom/shared/config/di_config.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 void main() async {
+  final flutterBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: flutterBinding);
   await dotenv.load();
+  await configureDependencies();
+  FlutterNativeSplash.remove();
   runApp(const MyApp());
 }
 
