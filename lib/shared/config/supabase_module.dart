@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
@@ -6,33 +8,62 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 @module
 abstract class SupabaseModule {
   @preResolve
-  Future<SupabaseClient> get supabaseClient async {
+  Future<SupabaseClient> supabaseClient(LocalStorage localStorage) async {
     final supabase = await Supabase.initialize(
       url: dotenv.get('SUPABASE_URL'),
       anonKey: dotenv.get('SUPABASE_KEY'),
-      authOptions: FlutterAuthClientOptions(
-        pkceAsyncStorage: SecurityTokenStorage(),
-      ),
-      storageOptions: StorageClientOptions(retryAttempts: 10),
+      authOptions: FlutterAuthClientOptions(localStorage: localStorage),
     );
     return supabase.client;
   }
 }
 
-class SecurityTokenStorage extends GotrueAsyncStorage {
-  final storage = FlutterSecureStorage();
+@Singleton(as: LocalStorage)
+class SecurityTokenStorage extends LocalStorage {
+  final _storage = const FlutterSecureStorage();
+  final _sessionKey = "session";
+  String _refreshToken = "";
+  String _accessToken = "";
   @override
-  Future<String?> getItem({required String key}) async {
-    return await storage.read(key: key);
+  Future<String?> accessToken() async {
+    return _accessToken;
   }
 
   @override
-  Future<void> removeItem({required String key}) async {
-    return await storage.delete(key: key);
+  Future<bool> hasAccessToken() async {
+    return _accessToken.isEmpty;
+  }
+
+  Future<String?> refreshToken() async {
+    return _refreshToken;
+  }
+
+  Future<bool> hasRefreshToken() async {
+    return _refreshToken.isEmpty;
   }
 
   @override
-  Future<void> setItem({required String key, required String value}) async {
-    return await storage.write(key: key, value: value);
+  Future<void> initialize() async {
+    final sessionString = await _storage.read(key: _sessionKey);
+    if (sessionString != null) {
+      final data = jsonDecode(sessionString);
+      _accessToken = data['access_token'];
+      _refreshToken = data['refresh_token'];
+    }
+  }
+
+  @override
+  Future<void> persistSession(String persistSessionString) async {
+    final data = jsonDecode(persistSessionString);
+    _accessToken = data['access_token'];
+    _refreshToken = data['refresh_token'];
+    return await _storage.write(key: _sessionKey, value: persistSessionString);
+  }
+
+  @override
+  Future<void> removePersistedSession() async {
+    _storage.delete(key: _sessionKey);
+    _accessToken = "";
+    _refreshToken = "";
   }
 }
