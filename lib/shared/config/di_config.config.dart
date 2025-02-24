@@ -23,8 +23,9 @@ extension GetItInjectableX on _i174.GetIt {
   }) async {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final supabaseModule = _$SupabaseModule();
+    gh.singleton<_i454.LocalStorage>(() => _i695.SecurityTokenStorage());
     await gh.factoryAsync<_i454.SupabaseClient>(
-      () => supabaseModule.supabaseClient,
+      () => supabaseModule.supabaseClient(gh<_i454.LocalStorage>()),
       preResolve: true,
     );
     return this;
