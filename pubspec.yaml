@@ -33,28 +33,36 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
+  # util
+  flutter_dotenv: ^5.2.1
+  flutter_riverpod: ^2.6.1
+  riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
   # UI
-  cupertino_icons: 
-  shadcn_ui:
-  flutter_dotenv: 
-
-  # feature
+  cupertino_icons: ^1.0.8
+  shadcn_ui: ^0.20.3
   flutter_native_splash: 
-
+  flutter_launcher_icons:
   # infra
-  supabase_flutter: 
-  flutter_secure_storage: 
+  supabase_flutter: ^2.8.4
+  flutter_secure_storage: ^9.2.4
+
   # DI
   injectable:  
   get_it:  
-  flutter_launcher_icons: 
+  freezed_annotation: ^3.0.0
+  json_annotation: ^4.9.0
+ 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: 
-  injectable_generator:  
-  build_runner:  
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.15
+  freezed: ^3.0.0
+  json_serializable: ^6.9.4
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
